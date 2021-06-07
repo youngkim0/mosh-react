@@ -2,11 +2,14 @@ import Like from "./common/like";
 import { getMovies } from "../services/fakeMovieService";
 import { useState } from "react";
 import Pagination from "./common/pagination";
+import { paginate } from "../utils/paginate";
+import Menu from "./common/menu";
 
 const Movies = () => {
   const [movies, setMovies] = useState(getMovies());
   const [pageSize, setPageSize] = useState(4);
   const [currentPage, setCurrentPage] = useState(1);
+  const currentPageMovies = paginate(movies, currentPage, pageSize);
 
   const handleDelete = (movie) => {
     const newMovies = movies.filter((m) => m._id !== movie._id);
@@ -30,51 +33,56 @@ const Movies = () => {
   };
 
   const handlePageChange = (page) => {
-    console.log(page);
+    setCurrentPage(page);
   };
 
   return (
-    <div>
-      <p>{displayheader()}</p>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Genre</th>
-            <th>Stock</th>
-            <th>Rate</th>
-            <th />
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {movies.map((movie) => (
-            <tr key={movie._id}>
-              <td>{movie.title}</td>
-              <td>{movie.genre.name}</td>
-              <td>{movie.numberInStock}</td>
-              <td>{movie.dailyRentalRate}</td>
-              <td>
-                <Like liked={movie.liked} onClick={() => handleLike(movie)} />
-              </td>
-              <td>
-                <button
-                  onClick={() => handleDelete(movie)}
-                  className="btn btn-danger btn-sm"
-                >
-                  Delete
-                </button>
-              </td>
+    <div className="row">
+      <div className="col-2 mt-5">
+        <Menu />
+      </div>
+      <div className="col">
+        <p>{displayheader()}</p>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Genre</th>
+              <th>Stock</th>
+              <th>Rate</th>
+              <th />
+              <th />
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <Pagination
-        pageSize={pageSize}
-        itemsCount={count}
-        onPageChange={handlePageChange}
-        currentpage={currentPage}
-      />
+          </thead>
+          <tbody>
+            {currentPageMovies.map((movie) => (
+              <tr key={movie._id}>
+                <td>{movie.title}</td>
+                <td>{movie.genre.name}</td>
+                <td>{movie.numberInStock}</td>
+                <td>{movie.dailyRentalRate}</td>
+                <td>
+                  <Like liked={movie.liked} onClick={() => handleLike(movie)} />
+                </td>
+                <td>
+                  <button
+                    onClick={() => handleDelete(movie)}
+                    className="btn btn-danger btn-sm"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <Pagination
+          pageSize={pageSize}
+          itemsCount={count}
+          onPageChange={handlePageChange}
+          currentPage={currentPage}
+        />
+      </div>
     </div>
   );
 };
